@@ -5,7 +5,7 @@
  */
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js';
 import {
-  getAuth, onAuthStateChanged, signInWithEmailAndPassword,
+  getAuth, setPersistence, inMemoryPersistence, signInWithEmailAndPassword,
   createUserWithEmailAndPassword, sendPasswordResetEmail, signOut
 } from 'https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js';
 import {
@@ -26,6 +26,9 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const gate = document.getElementById('cloud-gate');
+const setupGate = document.getElementById('cloud-setup');
+const setupForm = document.getElementById('cloud-setup-form');
+const setupError = document.getElementById('cloud-setup-error');
 const form = document.getElementById('cloud-auth-form');
 const authError = document.getElementById('cloud-auth-error');
 const title = document.getElementById('cloud-auth-title');
@@ -39,6 +42,7 @@ const bar = document.getElementById('cloud-bar');
 const root = document.getElementById('root');
 const emailEl = document.getElementById('cloud-user-email');
 
+submitButton.disabled = true;
 let mode = 'login';
 let currentUid = null;
 let userKey = null;
@@ -46,6 +50,7 @@ let pendingKey = null;
 let activeRef = null;
 let isBooted = false;
 let currentAuthTask = false;
+let loginReady = false;
 let pendingValue = null;
 let pendingTimer = null;
 let saving = false;
@@ -111,19 +116,23 @@ form.addEventListener('submit', async event => {
     authError.textContent = 'Құпиясөздер сәйкес емес.';
     return;
   }
+  if (!loginReady) return;
   currentAuthTask = true;
   submitButton.disabled = true;
   authError.textContent = '';
   try {
-    if (mode === 'register') await createUserWithEmailAndPassword(auth, email, password);
-    else await signInWithEmailAndPassword(auth, email, password);
+    const credential = mode === 'register'
+      ? await createUserWithEmailAndPassword(auth, email, password)
+      : await signInWithEmailAndPassword(auth, email, password);
     form.elements.password.value = '';
     form.elements.confirm.value = '';
+    // Only a successful, explicitly submitted login is allowed to open the diary.
+    await bootstrap(credential.user);
   } catch (error) {
     authError.textContent = friendlyError(error);
   } finally {
     currentAuthTask = false;
-    submitButton.disabled = false;
+    submitButton.disabled = !loginReady;
   }
 });
 
@@ -137,19 +146,22 @@ forgotButton.addEventListener('click', async () => {
   } catch (error) { authError.textContent = friendlyError(error); }
 });
 
-document.getElementById('cloud-logout').addEventListener('click', async () => {
+async function logout() {
   if (pendingValue || saving) {
     const proceed = window.confirm('Өзгерістер әлі онлайн сақталмаған болуы мүмкін. Сонда да шығасың ба?');
     if (!proceed) return;
   }
   if (unsubscribe) unsubscribe();
   await signOut(auth);
-  window.location.reload(); // Completely unmount the old user's React state.
-});
+  window.location.reload(); // Unmount the previous user's React state.
+}
+document.getElementById('cloud-logout').addEventListener('click', logout);
+document.getElementById('cloud-setup-logout').addEventListener('click', logout);
 
 function showLogin() {
   root.hidden = true;
   bar.hidden = true;
+  setupGate.hidden = true;
   gate.hidden = false;
   authError.textContent = '';
 }
@@ -208,12 +220,16 @@ window.addEventListener('offline', () => {
 async function bootstrap(user) {
   if (currentUid === user.uid && isBooted) return;
   currentUid = user.uid;
+  pendingValue = null;
+  lastSyncedSignature = null;
+  isBooted = false;
   userKey = `smart-starosta-cloud-user-${user.uid}`;
   pendingKey = `smart-starosta-pending-${user.uid}`;
   activeRef = doc(db, 'users', user.uid, 'private', 'diary');
   window.SmartStarostaCloud = { storageKey: userKey, queueSave };
   emailEl.textContent = user.email || 'Пайдаланушы';
   root.hidden = true;
+  setupGate.hidden = true;
   gate.hidden = false;
   authError.textContent = 'Деректер Firebase-тен жүктелуде…';
 
@@ -268,6 +284,44 @@ async function bootstrap(user) {
     return;
   }
 
+  // Existing custom student names are preserved. Only untouched, fully generic
+  // initial data from the older version is considered a sample, not a real group.
+  let initial = null;
+  try { initial = JSON.parse(localStorage.getItem(userKey) || 'null'); }
+  catch { initial = null; }
+  if (initial && looksLikeOldSample(initial)) {
+    initial.group = '';
+    initial.leader = '';
+    initial.lessons = [];
+    initial.attendance = {};
+    initial.students = initial.students.map((student, i) => ({
+      ...student, name: `${i + 1} студент`, role: ''
+    }));
+    localStorage.setItem(userKey, JSON.stringify(initial));
+    // Keep pending status: the new group should be saved after the wizard.
+  }
+  if (!initial || !String(initial.group || '').trim()) {
+    gate.hidden = true;
+    bar.hidden = true;
+    setupGate.hidden = false;
+    root.hidden = true;
+    setupError.textContent = '';
+    // Keep per-account name fields empty unless user provides them.
+    return;
+  }
+  mountDiary(readError);
+}
+
+function looksLikeOldSample(data) {
+  if (data.group !== 'БҚ-301' || data.leader !== 'Староста') return false;
+  if (!Array.isArray(data.students) || data.students.length === 0) return false;
+  return data.students.every((student, i) =>
+    student.name === `Студент ${i + 1}` ||
+    student.name === `${i + 1} студент`
+  );
+}
+
+function mountDiary(readError) {
   gate.hidden = true;
   bar.hidden = false;
   root.hidden = false;
@@ -291,18 +345,51 @@ async function bootstrap(user) {
   }
 }
 
-onAuthStateChanged(auth, user => {
-  if (!user) { showLogin(); return; }
-  bootstrap(user).catch(error => {
-    gate.hidden = false;
-    root.hidden = true;
-    bar.hidden = true;
-    authError.textContent = friendlyError(error);
-  });
-}, error => {
-  showLogin();
-  authError.textContent = friendlyError(error);
+setupForm.addEventListener('submit', event => {
+  event.preventDefault();
+  if (!currentUid || !loginReady || !activeRef || isBooted) return;
+  const group = setupForm.elements.group.value.trim();
+  const leader = setupForm.elements.leader.value.trim();
+  const count = Number(setupForm.elements.count.value);
+  if (!group || group.length > 30 || !Number.isInteger(count) || count < 1 || count > 60) {
+    setupError.textContent = 'Топ атауын және 1–60 аралығындағы студент санын дұрыс енгіз.';
+    return;
+  }
+  const data = {
+    schemaVersion: 2,
+    group,
+    leader,
+    students: Array.from({ length: count }, (_, i) => ({ id: `s${i}`, name: `${i + 1} студент`, role: '' })),
+    lessons: [], attendance: {}, notes: {}
+  };
+  try { localStorage.setItem(userKey, JSON.stringify(data)); }
+  catch (error) { setupError.textContent = 'Құрылғыға сақтау мүмкін болмады: ' + friendlyError(error); return; }
+  setupGate.hidden = true;
+  mountDiary(false);
 });
+
+// Important: NEVER automatically open a saved Firebase session. The previous
+// build persisted auth; first wait for Firebase to restore it, then sign out,
+// switch to memory-only auth, and wait for an explicit validated login.
+async function initializeLogin() {
+  root.hidden = true;
+  bar.hidden = true;
+  gate.hidden = false;
+  setupGate.hidden = true;
+  authError.textContent = 'Аккаунт тексерілуде…';
+  submitButton.disabled = true;
+  try {
+    await auth.authStateReady();
+    await signOut(auth);
+    await setPersistence(auth, inMemoryPersistence);
+    showLogin();
+    loginReady = true;
+    submitButton.disabled = false;
+  } catch (error) {
+    authError.textContent = 'Firebase қосылу қатесі: ' + friendlyError(error);
+  }
+}
+initializeLogin();
 
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => navigator.serviceWorker.register('./sw.js').catch(() => {}));
