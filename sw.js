@@ -1,7 +1,7 @@
 /* App-shell cache to make an installed PWA load more reliably.
  * First sign-in / account creation and cloud synchronization require internet.
  */
-const CACHE = 'smart-starosta-v3-login-required';
+const CACHE = 'smart-starosta-v4-neutral-user-input';
 const SHELL = ['./', './index.html', './cloud.js', './manifest.json', './icon-192.png', './icon-512.png'];
 self.addEventListener('install', event => {
   event.waitUntil(caches.open(CACHE).then(cache => cache.addAll(SHELL)).then(() => self.skipWaiting()));
