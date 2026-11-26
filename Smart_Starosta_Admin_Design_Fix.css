@@ -1,0 +1,68 @@
+/* Smart Starosta — бөлім меңгерушісінің панеліне арналған CSS түзетуі.
+   Бұл файл тек #head-dashboard контейнеріне әсер етеді.
+   Қолданыстағы head-dashboard.css файлының орнына немесе одан кейін қосуға болады. */
+#head-dashboard {
+  --hd-green: #176143;
+  --hd-deep: #173e31;
+  --hd-muted: #617668;
+  --hd-stroke: #e0eae2;
+  --hd-bg: #f4f8f5;
+  --hd-white: #fff;
+  font-family: "Noto Sans", "Segoe UI", Arial, sans-serif;
+  background: var(--hd-bg);
+  color: var(--hd-deep);
+  padding: clamp(16px, 3vw, 36px);
+  line-height: 1.5;
+  min-height: calc(100dvh - 56px);
+  box-sizing: border-box;
+}
+#head-dashboard *, #head-dashboard *::before, #head-dashboard *::after {box-sizing: border-box;}
+#head-dashboard h1 {margin: 3px 0 10px; font-size: clamp(24px, 3vw, 34px); font-weight: 800; line-height: 1.25; letter-spacing: -.025em; color: var(--hd-deep);}
+#head-dashboard h2 {margin: 0; font-size: clamp(20px, 2.2vw, 25px); line-height: 1.25; font-weight: 800; color: var(--hd-deep);}
+#head-dashboard h3 {margin: 0; font-size: 16px; line-height: 1.4;}
+#head-dashboard p {margin: 8px 0 16px; color: var(--hd-muted);}
+#head-dashboard .hd-eyebrow {display: inline-block; font-size: 11px; font-weight: 750; letter-spacing: .1em; text-transform: uppercase; color: var(--hd-green);}
+#head-dashboard .hd-toolbar, #head-dashboard .hd-filters, #head-dashboard .hd-controls, #head-dashboard .hd-actions {display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 12px 0 17px;}
+#head-dashboard label {font-size: 13px; font-weight: 650; color: #496354;}
+#head-dashboard input, #head-dashboard select {font: inherit; font-size: 13px; border: 1px solid #cbdcd0; background: #fff; color: #173e31; border-radius: 10px; padding: 10px 11px; min-height: 40px; max-width: 100%;}
+#head-dashboard input:focus-visible, #head-dashboard button:focus-visible {outline: 3px solid #8abbaa;outline-offset: 2px;}
+#head-dashboard button {display: inline-flex; align-items: center; justify-content: center; gap: 6px; font: inherit; font-weight: 700; font-size: 13px; cursor: pointer; border: 1px solid #c9ddd0; color: var(--hd-green); background: #fff; padding: 9px 13px; border-radius: 10px; min-height: 38px; transition: background .15s ease;}
+#head-dashboard button:hover {background: #eaf4ec;}
+#head-dashboard .hd-download, #head-dashboard button.hd-download {background: #1a6c4b; color: #fff; border-color: #1a6c4b;}
+#head-dashboard button.hd-download:hover {background: #14583d;}
+#head-dashboard button.hd-link {border: 0; min-height: 30px; padding: 4px 6px; background: transparent; text-decoration: underline; text-underline-offset: 3px;}
+#head-dashboard .hd-panel, #head-dashboard .hd-card, #head-dashboard #hd-details, #head-dashboard #hd-groups {background: #fff; border: 1px solid var(--hd-stroke); border-radius: 16px; box-shadow: 0 4px 17px rgba(36, 75, 54, .045);}
+#head-dashboard .hd-panel {margin: 16px 0; overflow: hidden;}
+#head-dashboard .hd-panel-title, #head-dashboard .hd-detail-heading {display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 20px;}
+#head-dashboard #hd-stats, #head-dashboard .hd-stats {display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin: 16px 0 24px;}
+#head-dashboard #hd-stats > *, #head-dashboard .hd-stats > * {padding: 18px 17px; border: 1px solid var(--hd-stroke); border-radius: 14px; background: #fff; min-width: 0; box-shadow: 0 3px 13px rgba(36, 75, 54, .04);}
+#head-dashboard #hd-stats b, #head-dashboard #hd-stats strong, #head-dashboard .hd-stats b, #head-dashboard .hd-stats strong {display: block; font-size: clamp(21px, 3vw, 28px); font-weight: 800; line-height: 1.35; color: var(--hd-green);}
+#head-dashboard .hd-stat-value {font-size: 28px; font-weight: 800; line-height: 1.3; color: var(--hd-green);}
+#head-dashboard .hd-stat-label {font-size: 12px; color: var(--hd-muted);}
+#head-dashboard .hd-section-title {padding: 16px 20px 12px; font-weight: 800; font-size: 16px; color: var(--hd-deep);}
+#head-dashboard .hd-section-title small {display: block; margin-top: 3px; font-weight: 450; font-size: 12px; color: var(--hd-muted);}
+#head-dashboard .hd-table-scroll {width: 100%; overflow-x: auto;}
+#head-dashboard table, #head-dashboard .hd-table {border-collapse: collapse; background: #fff; width: 100%; min-width: 730px; font-family: inherit; font-size: 13px;}
+#head-dashboard th {background: #eaf3ec; color: #4c6c5b; font-size: 12px; font-weight: 750; letter-spacing: .025em; text-align: left; padding: 13px 16px; border-bottom: 1px solid var(--hd-stroke); white-space: nowrap;}
+#head-dashboard td {padding: 14px 16px; border-bottom: 1px solid #edf2ed; vertical-align: middle; color: #203f31;}
+#head-dashboard tbody tr:nth-child(even) {background: #fbfdfb;}
+#head-dashboard tbody tr:hover {background: #f1f7f2;}
+#head-dashboard td strong {font-weight: 750;}
+#head-dashboard .hd-detail-metrics {display: flex; flex-wrap: wrap; gap: 9px; margin: 0 20px 18px;}
+#head-dashboard .hd-detail-metrics span {padding: 8px 10px; background: #edf5ef; border-radius: 9px; font-size: 12px; color: #42624b;}
+#head-dashboard .hd-detail-metrics b {color: var(--hd-green);}
+#head-dashboard .hd-subpanel {margin: 12px 20px 22px; border: 1px solid var(--hd-stroke); border-radius: 12px; overflow: hidden; background: #fff;}
+#head-dashboard .hd-subpanel:empty {display: none;}
+#head-dashboard .hd-subpanel-header {padding: 12px 15px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; align-items: center; background: #f5f9f6;}
+#head-dashboard .hd-footnote {font-size: 12px; color: #688274; padding: 9px 0 0; line-height: 1.6;}
+#head-dashboard .hd-empty {text-align: center; color: var(--hd-muted); padding: 24px;}
+#head-dashboard #hd-message {font-size: 13px; color: #376c4e;}
+#head-dashboard [hidden] {display: none !important;}
+@media(max-width: 760px){
+  #head-dashboard {padding: 15px 12px;}
+  #head-dashboard #hd-stats, #head-dashboard .hd-stats {grid-template-columns: repeat(2, minmax(0, 1fr));}
+  #head-dashboard #hd-stats > *, #head-dashboard .hd-stats > * {padding: 12px;}
+  #head-dashboard .hd-panel-title, #head-dashboard .hd-detail-heading {padding: 14px;}
+  #head-dashboard .hd-subpanel {margin: 10px;}
+  #head-dashboard table {min-width: 600px;}
+}
