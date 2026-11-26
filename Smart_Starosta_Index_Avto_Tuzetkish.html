@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="kk">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Smart Starosta — index.html автоматты түзеткіш</title>
+<style>
+:root{font-family:'Noto Sans',system-ui,'Segoe UI',Arial,sans-serif;color:#173d2c;background:#f4f8f5;font-synthesis:none}*{box-sizing:border-box}
+body{margin:0;padding:36px 16px}main{width:min(680px,100%);margin:0 auto;border:1px solid #dae9df;background:white;padding:32px;border-radius:22px;box-shadow:0 12px 42px #194a3010}
+small{color:#688274}h1{font-size:25px;line-height:1.3;margin:8px 0 14px}p{line-height:1.65;color:#466055}label{display:block;font-weight:700;margin:24px 0 10px}
+input[type=file]{width:100%;border:2px dashed #b6d4bf;border-radius:12px;padding:22px;background:#f9fcfa;font:inherit}
+button{display:block;width:100%;border:0;border-radius:12px;background:#206445;color:#fff;font-weight:750;font-size:16px;padding:16px 18px;margin-top:18px;cursor:pointer}
+button:disabled{opacity:.45;cursor:default}#feedback{min-height:50px;padding:13px;border-radius:12px;margin-top:16px;color:#275d42;background:#eef8f1}strong{color:#163e2c}
+code{background:#eef4ee;padding:2px 5px;border-radius:5px}ol{line-height:1.8;padding-left:20px;color:#456456}a{color:#215a40}footer{font-size:13px;color:#617768;margin-top:24px}
+</style>
+</head>
+<body>
+<main>
+<small>SMART STAROSTA · ЖОБА ФАЙЛЫН ТҮЗЕТУ</small>
+<h1>v10 модулін index.html файлына автоматты қосу</h1>
+<p>GitHub-тағы өзіңнің <strong>index.html</strong> файлыңды таңда. Түзеткіш еш деректі серверге жібермейді: файлды тек браузер ішінде өңдейді. Ескі кодқа тимей, <code>smart-starosta-v10.js</code> модулін іске қосатын жолды қосады.</p>
+<label for="source">1. Қазіргі index.html файлын таңда</label>
+<input id="source" type="file" accept=".html,text/html">
+<button type="button" id="save" disabled>2. Түзетілген index.html жүктеу</button>
+<div id="feedback" role="status" aria-live="polite">Алдымен файлды таңда.</div>
+<hr style="border:0;border-top:1px solid #e2ebe4;margin:25px 0">
+<p><strong>3. GitHub-қа екі файл керек:</strong> жаңа <code>index.html</code> және <code>smart-starosta-v10.js</code> (егер бұрын жүктеген болсаң, қайта жүктеу қажет емес).</p>
+<ol>
+ <li>GitHub → <code>my-kundelik</code> репозиторийі → <code>index.html</code> → <strong>Download raw file</strong>.</li>
+ <li>Осы түзеткіштен <code>index.html</code> файлын таңдап, жасалған жаңасын жүкте.</li>
+ <li>GitHub репозиторийіне түзетілген <code>index.html</code> файлын жүктеп, ескісін ауыстыр. <strong>Commit changes</strong> бас.</li>
+ <li>Сайтты Ctrl+Shift+R арқылы жаңарт; тіл мен кешігу уақыты батырмасын тексер.</li>
+</ol>
+<footer>Бұл түзеткіш Firebase ережелерін өзгертпейді. Кешігу уақытын онлайн сақтау үшін бұрын берілген Firestore Rules блогы бөлек жариялануы қажет. Excel-дегі күн бағаны — басқа экспорт функциясы, оны түзетуге тиісті бастапқы файл қажет.</footer>
+</main>
+<script>
+(()=>{
+'use strict';
+const field=document.querySelector('#source'),button=document.querySelector('#save'),feedback=document.querySelector('#feedback');
+let saved='';
+const loader='<script type="module" src="./smart-starosta-v10.js?v=10"><\/script>';
+field.addEventListener('change',async()=>{
+ button.disabled=true;saved='';
+ const file=field.files?.[0];if(!file)return feedback.textContent='Алдымен index.html файлын таңда.';
+ if(!/\.html?$/i.test(file.name))return feedback.textContent='Бұл HTML файлы емес. index.html таңда.';
+ try{
+  let source=await file.text();
+  if(!/<\/body\s*>/i.test(source))return feedback.textContent='Бұл файлда </body> жоқ. Дұрыс index.html таңда.';
+  if(/<script\b[^>]*\bsrc\s*=\s*["'][^"']*smart-starosta-v10\.js/i.test(source)){
+   saved=source;feedback.textContent='v10 модулі осы файлда бұрыннан бар. Қайталамаған дұрыс — файлды өзгеріссіз жүктей аласың.';
+  } else {
+   saved=source.replace(/<\/body\s*>/i,loader+'\n</body>');
+   feedback.textContent='Дайын! v10 модулі </body> алдына сәтті қосылды. Қалған код өзгерген жоқ.';
+  }
+  button.disabled=false;
+ }catch(error){feedback.textContent='Файл ашылмады: '+(error?.message||'белгісіз қате');}
+});
+button.addEventListener('click',()=>{
+ if(!saved)return;
+ const blob=new Blob([saved],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+ a.href=url;a.download='index.html';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000);
+ feedback.textContent='index.html дайын. Енді оны GitHub-қа жүкте.';
+});
+})();
+</script>
+</body>
+</html>
