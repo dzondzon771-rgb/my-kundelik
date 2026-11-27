@@ -1,0 +1,80 @@
+/* Smart Starosta v7 department head report dashboard */
+#head-dashboard[hidden], #head-dashboard [hidden]{display:none!important}
+#head-dashboard{background:#f6f8f5;min-height:calc(100dvh - 46px);color:#264638;font-family:Manrope,system-ui,-apple-system,'Segoe UI',sans-serif;font-size:14px}
+#head-dashboard *{box-sizing:border-box}
+#head-dashboard .hd-wrap{max-width:1260px;margin:0 auto;padding:32px 22px 55px}
+#head-dashboard .hd-heading{margin:0 0 25px}
+#head-dashboard .hd-eyebrow{color:#638b75;letter-spacing:1.4px;font-size:11px;font-weight:800}
+#head-dashboard .hd-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#70a782;margin-right:7px}
+#head-dashboard h1{font-size:clamp(24px,3vw,36px);font-weight:800;letter-spacing:-1px;line-height:1.2;margin:9px 0}
+#head-dashboard h2{font-weight:800;font-size:19px;margin:0}
+#head-dashboard p{line-height:1.5;margin:5px 0;color:#677c70}
+#head-dashboard strong{color:#254734}
+#head-dashboard .hd-controls{display:flex;flex-wrap:wrap;gap:12px;align-items:end;padding:16px;background:#fff;border:1px solid #e1eae3;border-radius:16px}
+#head-dashboard .hd-controls label{display:flex;flex-direction:column;gap:6px;color:#637468;font-size:11px;font-weight:800}
+#head-dashboard input{min-height:38px;border:1px solid #d8e2dc;border-radius:9px;background:#fff;padding:8px 10px;color:#254734;font-size:13px;outline-offset:2px}
+#head-dashboard input:focus{border-color:#5e9471;outline:2px solid #cfe5d6}
+#head-dashboard .hd-query{flex:1;min-width:180px}
+#head-dashboard .hd-query input{width:100%}
+#head-dashboard button{min-height:38px;border:0;cursor:pointer;font-weight:800}
+#head-dashboard button:disabled{opacity:.55;cursor:wait}
+#head-dashboard .hd-button{background:#27664f;color:white;border-radius:10px;padding:8px 16px}
+#head-dashboard .hd-secondary{background:#edf5ef;color:#2a664c;border-radius:9px;padding:7px 13px}
+#head-dashboard .hd-link{color:#2b7554;background:#eff6f0;border-radius:9px;font-size:12px;padding:7px 11px;white-space:nowrap}
+#head-dashboard button:focus-visible{outline:3px solid #7db697;outline-offset:2px}
+#head-dashboard .hd-message{margin:12px 3px;font-size:12px;min-height:20px}
+#head-dashboard .hd-message[data-kind='error']{color:#b04038}
+#head-dashboard .hd-message[data-kind='ok']{color:#467d5c}
+#head-dashboard .hd-metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:16px 0 20px}
+#head-dashboard .hd-metric{background:#fff;border:1px solid #e2eae2;border-radius:14px;padding:19px}
+#head-dashboard .hd-metric span{display:block;color:#758c7b;font-size:11px;font-weight:700}
+#head-dashboard .hd-metric strong{display:block;font-size:clamp(24px,3vw,31px);line-height:1.2;margin-top:10px;font-weight:800}
+#head-dashboard .hd-panel{background:#fff;border:1px solid #e1eae3;border-radius:16px;overflow:hidden;margin:16px 0}
+#head-dashboard .hd-panel-title{display:flex;justify-content:space-between;align-items:center;gap:18px;padding:20px 21px}
+#head-dashboard .hd-panel-title span:not(.hd-eyebrow){color:#7b9183;font-size:12px}
+#head-dashboard .hd-panel-title p{font-size:12px}
+#head-dashboard .hd-table-scroll{overflow:auto;width:100%}
+#head-dashboard .hd-table{width:100%;border-collapse:collapse;min-width:620px;text-align:left}
+#head-dashboard .hd-table th{color:#789181;font-size:11px;text-transform:uppercase;letter-spacing:.35px;background:#f5f8f5;padding:13px 17px;font-weight:800;white-space:nowrap}
+#head-dashboard .hd-table td{padding:14px 17px;border-top:1px solid #eff1ee;white-space:nowrap;font-size:13px}
+#head-dashboard .hd-table td strong{display:block;font-weight:800}
+#head-dashboard .hd-table td small{display:block;color:#8a988e;font-size:11px;margin-top:4px}
+#head-dashboard .hd-empty{text-align:center;color:#89978b!important;padding:28px!important;white-space:normal!important}
+#head-dashboard .hd-rate{display:inline-block;background:#ebf5ec;color:#37774f;border-radius:6px;padding:4px 7px;font-weight:800}
+#head-dashboard .hd-section-title{padding:17px 20px 11px;font-weight:800;color:#375b43;border-top:1px solid #edf2ee}
+#head-dashboard .hd-footnote{margin-top:16px;font-size:11px}
+#cloud-copy-uid[hidden]{display:none!important}
+@media(max-width:740px){
+ #head-dashboard .hd-wrap{padding:20px 12px 46px}
+ #head-dashboard .hd-controls{gap:9px;padding:13px}
+ #head-dashboard .hd-controls label:not(.hd-query){flex:1;min-width:125px}
+ #head-dashboard .hd-controls label input{min-width:0;width:100%}
+ #head-dashboard .hd-query{flex-basis:100%}
+ #head-dashboard .hd-button{width:100%}
+ #head-dashboard .hd-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+ #head-dashboard .hd-metric{padding:15px}
+ #head-dashboard .hd-panel-title{padding:17px 14px}
+ #head-dashboard .hd-table th,#head-dashboard .hd-table td{padding:11px 13px}
+ #cloud-copy-uid{font-size:10px;padding:5px 6px}
+}
+/* v8: per-group Excel and drill-down controls. */
+#head-dashboard .hd-actions{display:flex;flex-wrap:wrap;gap:7px;align-items:center;justify-content:flex-end}
+#head-dashboard .hd-download{background:#27664f;color:#fff;border-radius:9px;padding:8px 12px;font-size:12px;white-space:nowrap}
+#head-dashboard .hd-download:hover{background:#1b543e}
+#head-dashboard .hd-detail-heading{flex-wrap:wrap}
+#head-dashboard .hd-detail-metrics{display:flex;flex-wrap:wrap;gap:10px;padding:0 20px 16px}
+#head-dashboard .hd-detail-metrics>span{background:#f0f6f1;color:#516f5a;border-radius:7px;padding:8px 11px;font-size:12px}
+#head-dashboard .hd-detail-metrics b{color:#24563c}
+#head-dashboard .hd-section-title small{display:block;font-size:11px;font-weight:500;color:#809183;margin-top:5px}
+#head-dashboard .hd-subpanel{margin:14px 20px 24px;border-radius:13px;background:#fbfdfb;border:1px solid #e0ebdf;overflow:hidden}
+#head-dashboard .hd-subpanel:empty{display:none}
+#head-dashboard .hd-subpanel-header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:14px 16px}
+#head-dashboard .hd-subpanel-header h3{font-size:15px;line-height:1.35;color:#264638;font-weight:800;margin:0}
+#head-dashboard .hd-subpanel .hd-table{min-width:340px}
+@media(max-width:740px){
+ #head-dashboard .hd-detail-metrics{padding:0 13px 14px;gap:6px}
+ #head-dashboard .hd-detail-metrics>span{padding:7px 9px}
+ #head-dashboard .hd-actions{justify-content:flex-start}
+ #head-dashboard .hd-actions .hd-download{flex:1;text-align:center}
+ #head-dashboard .hd-subpanel{margin:12px 10px 18px}
+}
